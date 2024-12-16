@@ -2478,7 +2478,7 @@ CompositeCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_GeometryType: 0
+  m_GeometryType: 1
   m_GenerationType: 0
   m_EdgeRadius: 0
   m_ColliderPaths:
@@ -2590,32 +2590,6 @@ CompositeCollider2D:
         Y: -110000000
   m_CompositePaths:
     m_Paths:
-    - - {x: 15.874989, y: -11}
-      - {x: 16, y: -10.874989}
-      - {x: 16.000029, y: -10}
-      - {x: 16.875008, y: -9.999992}
-      - {x: 17, y: -9.874989}
-      - {x: 17.000029, y: -9}
-      - {x: 17.875008, y: -8.999992}
-      - {x: 18, y: -8.874989}
-      - {x: 17.999971, y: -3}
-      - {x: 17, y: -2.9999707}
-      - {x: 16.999971, y: -2}
-      - {x: 16, y: -1.9999707}
-      - {x: 15.999971, y: -1}
-      - {x: 10, y: -1.0000293}
-      - {x: 9.99997, y: -2}
-      - {x: 9, y: -2.0000293}
-      - {x: 8.99997, y: -3}
-      - {x: 8, y: -3.0000293}
-      - {x: 8.000008, y: -8.875008}
-      - {x: 8.125011, y: -9}
-      - {x: 9, y: -9.00003}
-      - {x: 9.000008, y: -9.875009}
-      - {x: 9.125011, y: -10}
-      - {x: 10, y: -10.00003}
-      - {x: 10.000009, y: -10.875009}
-      - {x: 10.125011, y: -11}
     - - {x: 2.8749893, y: -11}
       - {x: 3, y: -10.874989}
       - {x: 3.0000293, y: -10}
@@ -2642,6 +2616,32 @@ CompositeCollider2D:
       - {x: -3, y: -10.00003}
       - {x: -2.9999924, y: -10.875009}
       - {x: -2.8749893, y: -11}
+    - - {x: 15.874989, y: -11}
+      - {x: 16, y: -10.874989}
+      - {x: 16.000029, y: -10}
+      - {x: 16.875008, y: -9.999992}
+      - {x: 17, y: -9.874989}
+      - {x: 17.000029, y: -9}
+      - {x: 17.875008, y: -8.999992}
+      - {x: 18, y: -8.874989}
+      - {x: 17.999971, y: -3}
+      - {x: 17, y: -2.9999707}
+      - {x: 16.999971, y: -2}
+      - {x: 16, y: -1.9999707}
+      - {x: 15.999971, y: -1}
+      - {x: 10, y: -1.0000293}
+      - {x: 9.99997, y: -2}
+      - {x: 9, y: -2.0000293}
+      - {x: 8.99997, y: -3}
+      - {x: 8, y: -3.0000293}
+      - {x: 8.000008, y: -8.875008}
+      - {x: 8.125011, y: -9}
+      - {x: 9, y: -9.00003}
+      - {x: 9.000008, y: -9.875009}
+      - {x: 9.125011, y: -10}
+      - {x: 10, y: -10.00003}
+      - {x: 10.000009, y: -10.875009}
+      - {x: 10.125011, y: -11}
   m_VertexDistance: 0.0005
   m_OffsetDistance: 0.00005
   m_UseDelaunayMesh: 0
@@ -2809,6 +2809,7 @@ GameObject:
   m_Component:
   - component: {fileID: 592431512}
   - component: {fileID: 592431517}
+  - component: {fileID: 592431519}
   - component: {fileID: 592431518}
   - component: {fileID: 592431511}
   - component: {fileID: 592431509}
@@ -2930,7 +2931,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 1.5
   m_Material: {fileID: 6200000, guid: 762a4e987625e534d9c64efd74d596fe, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
@@ -3000,10 +3001,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e54f7f7da154b424b9e2e5823a4fc1d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Grounded: 0
   MovementSpeed: 6
-  JumpForce: 6
-  PlayerAnim: {fileID: 592431509}
+  JumpForce: 9
+  CoyoteTime: 0.15
+  JumpBufferTime: 0.2
   Player: {fileID: 592431508}
   TheGround:
     serializedVersion: 2
@@ -3023,6 +3024,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetFrameRate: 60
+--- !u!114 &592431519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 592431508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1a62d5c3e8d12440ace736f7cc7f358, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Player: {fileID: 592431508}
 --- !u!1 &978934456
 GameObject:
   m_ObjectHideFlags: 0

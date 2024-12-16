@@ -4,15 +4,18 @@ using UnityEngine.Serialization;
 public class PlayerController : MonoBehaviour
 {
 
-    private float MovementInputDirection;
+    public static float MovementInputDirection;
     private float time;
     private bool FacingRight = true;
-    public bool Grounded;
+    public static bool Grounded;
     public float MovementSpeed;
     public float JumpForce;
+    public float CoyoteTime;
+    private float CoyoteTimeCounter;
+    public float JumpBufferTime;
+    private float JumpBufferCounter;
     
     private Rigidbody2D PlayerRb;
-    public Animator PlayerAnim;
     public GameObject Player;
     public LayerMask TheGround;
     public Transform GroundCheck;
@@ -22,7 +25,6 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         PlayerRb = GetComponent<Rigidbody2D>();
-        PlayerAnim = GetComponent<Animator>();
         Player = GameObject.Find("Player");
     }
 
@@ -59,28 +61,27 @@ public class PlayerController : MonoBehaviour
     private void CheckInput()
     {
         MovementInputDirection = Input.GetAxisRaw("Horizontal");
-        PlayerAnim.SetFloat("MoveSpeed", Mathf.Abs(MovementInputDirection));
-        if (MovementInputDirection == 0)
-        {
-            time += Time.deltaTime;
-            if (time >= 0.1f)
-            {
-                PlayerAnim.SetTrigger("Idle");
-                time = 0;
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.Space) && Grounded)
-        {
-            Jump();
-        }
-
         if (Grounded)
         {
-            PlayerAnim.SetBool("Grounded", true);
+            CoyoteTimeCounter = CoyoteTime;
         }
         else
         {
-            PlayerAnim.SetBool("Grounded", false);
+            CoyoteTimeCounter -= Time.deltaTime;
+        }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            JumpBufferCounter = JumpBufferTime;
+        }
+        else
+        {
+            JumpBufferCounter -= Time.deltaTime;
+        }
+        
+        if(JumpBufferCounter > 0 && CoyoteTimeCounter > 0f)
+        {
+            Jump();
+            JumpBufferCounter = 0;
         }
     }
     
@@ -92,7 +93,7 @@ public class PlayerController : MonoBehaviour
     private void Jump()
     {
         PlayerRb.linearVelocity = new Vector2(PlayerRb.linearVelocity.x, JumpForce);
-        PlayerAnim.SetTrigger("Jump");
+        PlayerAnimator.Jump();
     }
 
     private void Flip()
