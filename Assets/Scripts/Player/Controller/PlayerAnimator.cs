@@ -21,7 +21,7 @@ public class PlayerAnimator : MonoBehaviour
         if (PlayerController.MovementInputDirection == 0)
         {
             time += Time.deltaTime;
-            if (time >= 0.1f)
+            if (time >= 0.15f)
             {
                 PlayerAnim.SetTrigger("Idle");
                 time = 0;
@@ -41,5 +41,10 @@ public class PlayerAnimator : MonoBehaviour
     public static void Jump()
     {
         PlayerAnim.SetTrigger("Jump");
+    }
+
+    public static void Attack()
+    {
+        PlayerAnim.SetTrigger("Attack");
     }
 }
