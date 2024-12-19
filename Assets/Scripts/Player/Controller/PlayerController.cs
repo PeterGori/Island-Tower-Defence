@@ -9,7 +9,8 @@ public class PlayerController : MonoBehaviour
     private bool FacingRight = true;
     public static bool Grounded;
     public float MovementSpeed;
-    public float JumpForce;
+    public float MaxJumpForce;
+    public float MinJumpForce;
     public float CoyoteTime;
     private float CoyoteTimeCounter;
     public float JumpBufferTime;
@@ -77,6 +78,11 @@ public class PlayerController : MonoBehaviour
         {
             JumpBufferCounter -= Time.deltaTime;
         }
+
+        if (Input.GetKeyUp(KeyCode.Space) && PlayerRb.linearVelocity.y > MinJumpForce)
+        {
+            PlayerRb.linearVelocity = new Vector2(PlayerRb.linearVelocity.x, MinJumpForce);
+        }
         
         if(JumpBufferCounter > 0 && CoyoteTimeCounter > 0f)
         {
@@ -92,7 +98,7 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
-        PlayerRb.linearVelocity = new Vector2(PlayerRb.linearVelocity.x, JumpForce);
+        PlayerRb.linearVelocity = new Vector2(PlayerRb.linearVelocity.x, MaxJumpForce);
         PlayerAnimator.Jump();
     }
 

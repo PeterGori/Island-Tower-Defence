@@ -3003,7 +3003,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MovementSpeed: 6
-  JumpForce: 9
+  MaxJumpForce: 10
+  MinJumpForce: 4.5
   CoyoteTime: 0.15
   JumpBufferTime: 0.2
   Player: {fileID: 592431508}
