@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -7,16 +9,23 @@ public class PlayerController : MonoBehaviour
     public static float MovementInputDirection;
     private float time;
     private bool FacingRight = true;
+    public static bool Crouching;
     public static bool Grounded;
     public float MovementSpeed;
+    public float WalkSpeed;
+    public float CrouchSpeed;
     public float MaxJumpForce;
     public float MinJumpForce;
     public float CoyoteTime;
     private float CoyoteTimeCounter;
     public float JumpBufferTime;
     private float JumpBufferCounter;
+    private float CrouchTime;
+    private float CrouchTimeCounter;
     
     private Rigidbody2D PlayerRb;
+    public BoxCollider2D PlayerCollider;
+    public BoxCollider2D CrouchCollider;
     public GameObject Player;
     public LayerMask TheGround;
     public Transform GroundCheck;
@@ -94,11 +103,27 @@ public class PlayerController : MonoBehaviour
             PlayerRb.linearVelocity = new Vector2(PlayerRb.linearVelocity.x, MinJumpForce);
         }
         
-        // Finally checks both the JumpBufferCounter and CoyoteTimeCounter to see if the player should be able to jump.
-        if(JumpBufferCounter > 0 && CoyoteTimeCounter > 0f)
+        // Finally checks the JumpBufferCounter, CoyoteTimeCounter, Crouching Status to see if the player should be able to jump.
+        if(JumpBufferCounter > 0 && CoyoteTimeCounter > 0f && !Crouching)
         {
             Jump();
             JumpBufferCounter = 0;
+        }
+
+        // Checks if the player is pressing the S key and if they are grounded, if they are the player crouches. This reduces movement speed and changes the hitbox of the player.
+        if (Input.GetKey(KeyCode.S) && Grounded)
+        {
+            Crouch();
+            MovementSpeed = CrouchSpeed;
+            // CrouchTimeCounter = CrouchTime;
+        }
+        // If the player is not pressing the S key, the player stands up and the movement speed is reset to the walk speed.
+        else
+        {
+            MovementSpeed = WalkSpeed;
+            PlayerCollider.enabled = true;
+            CrouchCollider.enabled = false;
+            Crouching = false;
         }
     }
     
@@ -115,10 +140,19 @@ public class PlayerController : MonoBehaviour
         PlayerAnimator.Jump();
     }
 
+    // Makes the player crouch by changing the player's hitbox and reducing the player's movement speed.
+    private void Crouch()
+    {
+        PlayerCollider.enabled = false;
+        CrouchCollider.enabled = true;
+        Crouching = true;
+    }
+
     // Flips the player sprite when the player changes direction.
     private void Flip()
     {
         FacingRight = !FacingRight;
         transform.Rotate(0,180,0);
     }
+    
 }

@@ -36,6 +36,15 @@ public class PlayerAnimator : MonoBehaviour
         {
             PlayerAnim.SetBool("Grounded", false);
         }
+
+        if (PlayerController.Crouching)
+        {
+            PlayerAnim.SetBool("Crouching", true);
+        }
+        else
+        {
+            PlayerAnim.SetBool("Crouching", false);
+        }
     }
     
     public static void Jump()
