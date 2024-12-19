@@ -49,11 +49,22 @@ public class PlayerAnimator : MonoBehaviour
     
     public static void Jump()
     {
-        PlayerAnim.SetTrigger("Jump");
+        if (!PlayerController.Grounded) PlayerAnim.SetTrigger("Jump");
     }
 
     public static void Attack()
     {
         PlayerAnim.SetTrigger("Attack");
+    }
+    
+    public static void Combo()
+    {
+        PlayerAnim.SetBool("Combo", true);
+        print("Combo Called");
+    }
+    
+    public static void EndCombo()
+    {
+        PlayerAnim.SetBool("Combo", false);
     }
 }
