@@ -12,8 +12,7 @@ public class PlayerController : MonoBehaviour
     public static bool Crouching;
     public static bool Grounded;
     public float MovementSpeed;
-    public float WalkSpeed;
-    public float CrouchSpeed;
+    public float CrouchDragCoefficient;
     public float MaxJumpForce;
     public float MinJumpForce;
     public float CoyoteTime;
@@ -114,13 +113,11 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.S) && Grounded)
         {
             Crouch();
-            MovementSpeed = CrouchSpeed;
             // CrouchTimeCounter = CrouchTime;
         }
         // If the player is not pressing the S key, the player stands up and the movement speed is reset to the walk speed.
         else
         {
-            MovementSpeed = WalkSpeed;
             PlayerCollider.enabled = true;
             CrouchCollider.enabled = false;
             Crouching = false;
@@ -130,7 +127,12 @@ public class PlayerController : MonoBehaviour
     // Applies the movement input to the player's rigidbody using the MovementSpeed and MovementInputDirection.
     private void ApplyMovementInput()
     {
-        PlayerRb.linearVelocity = new Vector2(MovementSpeed * MovementInputDirection, PlayerRb.linearVelocity.y);
+        // If the player is walking speed remains constant, if the player is crouching speed is reduced by the CrouchDragCoefficient every frame.
+        if (!Crouching) PlayerRb.linearVelocity = new Vector2(MovementSpeed * MovementInputDirection, PlayerRb.linearVelocity.y);
+        else if (Crouching)
+            PlayerRb.linearVelocity = Mathf.Abs(PlayerRb.linearVelocityX) > 0.2
+                ? new Vector2(PlayerRb.linearVelocityX * CrouchDragCoefficient, PlayerRb.linearVelocity.y)
+                : new Vector2(0, PlayerRb.linearVelocity.y);
     }
 
     // Makes the player jump by setting the player's y velocity to the MaxJumpForce and playing the jump animation.

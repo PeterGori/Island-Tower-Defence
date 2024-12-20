@@ -3004,8 +3004,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MovementSpeed: 6
-  WalkSpeed: 6
-  CrouchSpeed: 3
+  CrouchDragCoefficient: 0.95
   MaxJumpForce: 10
   MinJumpForce: 4.5
   CoyoteTime: 0.15
@@ -3056,7 +3055,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d4769487c75cd6289fb1c6b3064ba24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ComboTime: 0.7
+  ComboTime: 0.75
 --- !u!61 &592431521
 BoxCollider2D:
   m_ObjectHideFlags: 0

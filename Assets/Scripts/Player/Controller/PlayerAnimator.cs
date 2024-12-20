@@ -49,7 +49,7 @@ public class PlayerAnimator : MonoBehaviour
     
     public static void Jump()
     {
-        if (!PlayerController.Grounded) PlayerAnim.SetTrigger("Jump");
+        if (!PlayerController.Crouching) PlayerAnim.SetTrigger("Jump");
     }
 
     public static void Attack()
