@@ -70,6 +70,6 @@ public class PlayerAnimator : MonoBehaviour
 
     public static void Dash()
     {
-        // PlayerAnim.SetTrigger("Dash");
+        PlayerAnim.SetTrigger("Dash");
     }
 }

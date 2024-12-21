@@ -4,6 +4,7 @@ using UnityEngine;
 public class PlayerCombat : MonoBehaviour
 {
     [SerializeField] private float ComboTime;
+    [SerializeField] private float ComboWait;
     private float ComboTimeCounter = 0;
     private float CoolDownCounter = 0;
     private bool Combo = false;
@@ -40,7 +41,7 @@ public class PlayerCombat : MonoBehaviour
             PlayerAnimator.Attack();
         }
         
-        if (ComboTimeCounter <= -0.45f && Combo)
+        if (ComboTimeCounter <= -ComboWait && Combo)
         {
             PlayerAnimator.EndCombo();
             Combo = false;

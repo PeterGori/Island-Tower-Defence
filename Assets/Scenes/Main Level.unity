@@ -4357,6 +4357,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ComboTime: 0.75
+  ComboWait: 0.6
 --- !u!61 &592431521
 BoxCollider2D:
   m_ObjectHideFlags: 0

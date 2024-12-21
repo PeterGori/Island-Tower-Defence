@@ -158,7 +158,8 @@ public class PlayerController : MonoBehaviour
         {
             Dashing = true;
             CanDash = false;
-            DashDirection = new Vector2(HorizontalMovementInputDirection, VerticalMovementInputDirection);
+            PlayerAnimator.Dash();
+            DashDirection = new Vector2(HorizontalMovementInputDirection, 0);
             if (DashDirection == Vector2.zero)
             {
                 DashDirection = FacingRight ? new Vector2(1, 0) : new Vector2(-1, 0);
@@ -170,7 +171,6 @@ public class PlayerController : MonoBehaviour
         if (Dashing)
         {
             PlayerRb.linearVelocity = DashDirection.normalized * DashForce;
-            PlayerAnimator.Dash();
             return;
         }
 
