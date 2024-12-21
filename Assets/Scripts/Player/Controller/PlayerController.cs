@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UIElements;
@@ -6,37 +7,55 @@ using UnityEngine.UIElements;
 public class PlayerController : MonoBehaviour
 {
 
-    public static float MovementInputDirection;
-    private float time;
+    [Header("Movement")]
+    public static float HorizontalMovementInputDirection;
+    public static float VerticalMovementInputDirection;
     private bool FacingRight = true;
     public static bool Crouching;
-    public static bool Grounded;
-    public static bool LeftWall;
-    public static bool RightWall;
     public float MovementSpeed;
     public float CrouchDragCoefficient;
+    private float CrouchTime;
+    private float CrouchTimeCounter;
+    
+    [Header("Jumping")]
     public float MaxJumpForce;
     public float MinJumpForce;
     public float CoyoteTime;
     private float CoyoteTimeCounter;
     public float JumpBufferTime;
     private float JumpBufferCounter;
-    private float CrouchTime;
-    private float CrouchTimeCounter;
-    public float DashForce;
-    public float DashCooldown;
-    private float DashTime;
     
+        
+    [Header("Dashing")]
+    [SerializeField] private float DashForce;
+    [SerializeField] private float DashTime;
+    [SerializeField] private float DashDamping;
+    private Vector2 DashDirection;
+    private bool Dashing;
+    private bool CanDash = true;
+    
+    
+    [Header("Surroundings Checks")]
+    public Transform GroundCheck;
+    public Vector2 GroundCheckRadius;
+    public LayerMask TheGround;
+    public static bool Grounded;
+    public Transform LeftWallCheck;
+    public Transform RightWallCheck;
+    public Vector2 WallCheckRadius;
+    public static bool LeftWall;
+    public static bool RightWall;
+    
+        
+    [Header("Player Components")]
     private Rigidbody2D PlayerRb;
     public BoxCollider2D PlayerCollider;
     public BoxCollider2D CrouchCollider;
     public GameObject Player;
-    public LayerMask TheGround;
-    public Transform GroundCheck;
-    public Vector2 GroundCheckRadius;
-    public Transform LeftWallCheck;
-    public Transform RightWallCheck;
-    public Vector2 WallCheckRadius;
+    
+    
+    [Header("Misc")]
+    private float time;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -69,11 +88,11 @@ public class PlayerController : MonoBehaviour
     // Checks if the player is changing direction and flips the sprite if they are.
     private void CheckMovementDirection()
     {
-        if (FacingRight && MovementInputDirection < 0)
+        if (FacingRight && HorizontalMovementInputDirection < 0)
         {
             Flip();
         }
-        else if (!FacingRight && MovementInputDirection > 0)
+        else if (!FacingRight && HorizontalMovementInputDirection > 0)
         {
             Flip();
         }
@@ -82,7 +101,8 @@ public class PlayerController : MonoBehaviour
     private void CheckInput()
     {
         // Gets the horizontal input from the player for use in movement and checking if the sprite should be flipped
-        MovementInputDirection = Input.GetAxisRaw("Horizontal");
+        HorizontalMovementInputDirection = Input.GetAxisRaw("Horizontal");
+        VerticalMovementInputDirection = Input.GetAxisRaw("Vertical");
         
         // Checks if the player is grounded, if they are CoyoteTimeCounter is reset so the player can jump after walking off a ledge for a small window.
         if (Grounded)
@@ -132,23 +152,40 @@ public class PlayerController : MonoBehaviour
             Crouching = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) && DashTime <= 0)
+        var DashInput = Input.GetKeyDown(KeyCode.LeftShift);
+
+        if (DashInput && CanDash)
         {
-            DashTime = DashCooldown;
-            Dash();
+            Dashing = true;
+            CanDash = false;
+            DashDirection = new Vector2(HorizontalMovementInputDirection, VerticalMovementInputDirection);
+            if (DashDirection == Vector2.zero)
+            {
+                DashDirection = FacingRight ? new Vector2(1, 0) : new Vector2(-1, 0);
+            }
+
+            StartCoroutine(StopDash());
         }
 
-        else
+        if (Dashing)
         {
-            DashTime -= Time.deltaTime;
+            PlayerRb.linearVelocity = DashDirection.normalized * DashForce;
+            PlayerAnimator.Dash();
+            return;
         }
+
+        if (Grounded)
+        {
+            CanDash = true;
+        }
+
     }
     
     // Applies the movement input to the player's rigidbody using the MovementSpeed and MovementInputDirection.
     private void ApplyMovementInput()
     {
         // If the player is walking speed remains constant, if the player is crouching speed is reduced by the CrouchDragCoefficient every frame.
-        if (!Crouching) PlayerRb.linearVelocity = new Vector2(MovementSpeed * MovementInputDirection, PlayerRb.linearVelocity.y);
+        if (!Crouching && !Dashing) PlayerRb.linearVelocity = new Vector2(MovementSpeed * HorizontalMovementInputDirection, PlayerRb.linearVelocity.y);
         else if (Crouching)
             PlayerRb.linearVelocity = Mathf.Abs(PlayerRb.linearVelocityX) > 0.2
                 ? new Vector2(PlayerRb.linearVelocityX * CrouchDragCoefficient, PlayerRb.linearVelocity.y)
@@ -170,13 +207,11 @@ public class PlayerController : MonoBehaviour
         Crouching = true;
     }
 
-    private void Dash()
+    private IEnumerator StopDash()
     {
-        for (int i = 0; i < 20; i++)
-        {
-            if (FacingRight && !RightWall) Player.transform.position += new Vector3(DashForce / 20f, 0, 0);
-            else if (!FacingRight && !LeftWall) Player.transform.position += new Vector3(-DashForce / 20f, 0, 0);
-        }
+        yield return new WaitForSeconds(DashTime);
+        Dashing = false;
+        PlayerRb.linearVelocity *= DashDamping;
     }
 
     // Flips the player sprite when the player changes direction.

@@ -17,8 +17,8 @@ public class PlayerAnimator : MonoBehaviour
     void Update()
     {
         time += UnityEngine.Time.deltaTime;
-        PlayerAnim.SetFloat("MoveSpeed", Mathf.Abs(PlayerController.MovementInputDirection));
-        if (PlayerController.MovementInputDirection == 0)
+        PlayerAnim.SetFloat("MoveSpeed", Mathf.Abs(PlayerController.HorizontalMovementInputDirection));
+        if (PlayerController.HorizontalMovementInputDirection == 0)
         {
             time += Time.deltaTime;
             if (time >= 0.15f)
@@ -66,5 +66,10 @@ public class PlayerAnimator : MonoBehaviour
     public static void EndCombo()
     {
         PlayerAnim.SetBool("Combo", false);
+    }
+
+    public static void Dash()
+    {
+        // PlayerAnim.SetTrigger("Dash");
     }
 }
