@@ -4228,7 +4228,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 3
+  m_GravityScale: 1.5
   m_Material: {fileID: 6200000, guid: 762a4e987625e534d9c64efd74d596fe, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
@@ -4300,8 +4300,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MovementSpeed: 6
   CrouchDragCoefficient: 0.95
-  MaxJumpForce: 20
-  MinJumpForce: 9
+  MaxJumpForce: 10
+  MinJumpForce: 4.5
   CoyoteTime: 0.15
   JumpBufferTime: 0.2
   DashForce: 20
