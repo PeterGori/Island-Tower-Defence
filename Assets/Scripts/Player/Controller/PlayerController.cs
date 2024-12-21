@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
     private bool FacingRight = true;
     public static bool Crouching;
     public static bool Grounded;
+    public static bool LeftWall;
+    public static bool RightWall;
     public float MovementSpeed;
     public float CrouchDragCoefficient;
     public float MaxJumpForce;
@@ -21,6 +23,9 @@ public class PlayerController : MonoBehaviour
     private float JumpBufferCounter;
     private float CrouchTime;
     private float CrouchTimeCounter;
+    public float DashForce;
+    public float DashCooldown;
+    private float DashTime;
     
     private Rigidbody2D PlayerRb;
     public BoxCollider2D PlayerCollider;
@@ -29,6 +34,9 @@ public class PlayerController : MonoBehaviour
     public LayerMask TheGround;
     public Transform GroundCheck;
     public Vector2 GroundCheckRadius;
+    public Transform LeftWallCheck;
+    public Transform RightWallCheck;
+    public Vector2 WallCheckRadius;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -54,6 +62,8 @@ public class PlayerController : MonoBehaviour
     private void CheckSurroundings()
     {
         Grounded = Physics2D.OverlapBox(GroundCheck.position, GroundCheckRadius, 0, TheGround);
+        LeftWall = Physics2D.OverlapBox(LeftWallCheck.position, WallCheckRadius, 0, TheGround);
+        RightWall = Physics2D.OverlapBox(RightWallCheck.position, WallCheckRadius, 0, TheGround);
     }
 
     // Checks if the player is changing direction and flips the sprite if they are.
@@ -113,7 +123,6 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.S) && Grounded)
         {
             Crouch();
-            // CrouchTimeCounter = CrouchTime;
         }
         // If the player is not pressing the S key, the player stands up and the movement speed is reset to the walk speed.
         else
@@ -121,6 +130,17 @@ public class PlayerController : MonoBehaviour
             PlayerCollider.enabled = true;
             CrouchCollider.enabled = false;
             Crouching = false;
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) && DashTime <= 0)
+        {
+            DashTime = DashCooldown;
+            Dash();
+        }
+
+        else
+        {
+            DashTime -= Time.deltaTime;
         }
     }
     
@@ -150,11 +170,27 @@ public class PlayerController : MonoBehaviour
         Crouching = true;
     }
 
+    private void Dash()
+    {
+        for (int i = 0; i < 20; i++)
+        {
+            if (FacingRight && !RightWall) Player.transform.position += new Vector3(DashForce / 20f, 0, 0);
+            else if (!FacingRight && !LeftWall) Player.transform.position += new Vector3(-DashForce / 20f, 0, 0);
+        }
+    }
+
     // Flips the player sprite when the player changes direction.
     private void Flip()
     {
         FacingRight = !FacingRight;
         transform.Rotate(0,180,0);
     }
-    
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(GroundCheck.position, GroundCheckRadius);
+        Gizmos.DrawWireCube(LeftWallCheck.position, WallCheckRadius);
+        Gizmos.DrawWireCube(RightWallCheck.position, WallCheckRadius);
+    }
 }
