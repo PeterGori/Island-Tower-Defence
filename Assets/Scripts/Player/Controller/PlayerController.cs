@@ -33,20 +33,29 @@ public class PlayerController : MonoBehaviour
     private Vector2 DashDirection;
     private bool Dashing;
     private bool CanDash = true;
+    private bool DashInput = false;
+    
+    
+    [Header("Sliding")]
+    [SerializeField] private float SlideDragCoefficient;
+    private bool Sliding = false;
     
     
     [Header("Surroundings Checks")]
+    public static bool GroundedCheck;
     public Transform GroundCheck;
     public Vector2 GroundCheckRadius;
     public LayerMask TheGround;
     public static bool Grounded;
+    public float GroundTime;
+    private float GroundTimeCounter = 0;
     public Transform LeftWallCheck;
     public Transform RightWallCheck;
     public Vector2 WallCheckRadius;
-    public static bool LeftWall;
-    public static bool RightWall;
+    private static bool LeftWall;
+    private static bool RightWall;
     
-        
+    
     [Header("Player Components")]
     private Rigidbody2D PlayerRb;
     public BoxCollider2D PlayerCollider;
@@ -67,9 +76,9 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        CheckSurroundings();
         CheckInput();
         CheckMovementDirection();
-        CheckSurroundings();
     }
 
     void FixedUpdate()
@@ -80,7 +89,17 @@ public class PlayerController : MonoBehaviour
     // Checks all Overlap Colliders around the player and outputs booleans for all of them.
     private void CheckSurroundings()
     {
-        Grounded = Physics2D.OverlapBox(GroundCheck.position, GroundCheckRadius, 0, TheGround);
+        Sliding = (LeftWall || RightWall) && PlayerRb.linearVelocityY < 0;
+        
+        if (Physics2D.OverlapBox(GroundCheck.position, GroundCheckRadius, 0, TheGround)) GroundTimeCounter += Time.deltaTime;
+        else
+        {
+            Grounded = false;
+            GroundTimeCounter = 0;
+        }
+        if (GroundTimeCounter > GroundTime) Grounded = true;
+        GroundedCheck = GroundTimeCounter > 0;
+        
         LeftWall = Physics2D.OverlapBox(LeftWallCheck.position, WallCheckRadius, 0, TheGround);
         RightWall = Physics2D.OverlapBox(RightWallCheck.position, WallCheckRadius, 0, TheGround);
     }
@@ -152,8 +171,10 @@ public class PlayerController : MonoBehaviour
             Crouching = false;
         }
 
-        var DashInput = Input.GetKeyDown(KeyCode.LeftShift);
+        // Checks for if the player wants to dash
+        DashInput = Input.GetKeyDown(KeyCode.LeftShift);
 
+        // Checks for if the player can dash, and if they can does the dash
         if (DashInput && CanDash)
         {
             Dashing = true;
@@ -168,24 +189,25 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(StopDash());
         }
 
-        if (Dashing)
-        {
-            PlayerRb.linearVelocity = DashDirection.normalized * DashForce;
-            return;
-        }
-
+        // Resets the players ability to dash
+        // TODO: Add Cooldown and UI Element for it
         if (Grounded)
         {
             CanDash = true;
         }
-
+        
     }
     
     // Applies the movement input to the player's rigidbody using the MovementSpeed and MovementInputDirection.
     private void ApplyMovementInput()
     {
-        // If the player is walking speed remains constant, if the player is crouching speed is reduced by the CrouchDragCoefficient every frame.
-        if (!Crouching && !Dashing) PlayerRb.linearVelocity = new Vector2(MovementSpeed * HorizontalMovementInputDirection, PlayerRb.linearVelocity.y);
+        // If the player is walking speed remains constant
+        if (!Crouching && !Dashing && !Sliding) PlayerRb.linearVelocity = new Vector2(MovementSpeed * HorizontalMovementInputDirection, PlayerRb.linearVelocity.y);
+        // Applies dashing movement speed
+        else if (Dashing) PlayerRb.linearVelocity = DashDirection.normalized * DashForce;
+        // Applies sliding drag
+        else if (Sliding) PlayerRb.linearVelocity = new Vector2(MovementSpeed * HorizontalMovementInputDirection, PlayerRb.linearVelocity.y * SlideDragCoefficient);
+        // Applies crouch speed reduction
         else if (Crouching)
             PlayerRb.linearVelocity = Mathf.Abs(PlayerRb.linearVelocityX) > 0.2
                 ? new Vector2(PlayerRb.linearVelocityX * CrouchDragCoefficient, PlayerRb.linearVelocity.y)
@@ -207,6 +229,7 @@ public class PlayerController : MonoBehaviour
         Crouching = true;
     }
 
+    // Stops the dash after the allotted DashTime, then damps the velocity to prevent a 'brickwall' or 'floating' effect
     private IEnumerator StopDash()
     {
         yield return new WaitForSeconds(DashTime);

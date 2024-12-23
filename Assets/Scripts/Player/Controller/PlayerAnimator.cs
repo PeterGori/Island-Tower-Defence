@@ -28,13 +28,13 @@ public class PlayerAnimator : MonoBehaviour
             }
         }
         
-        if (PlayerController.Grounded)
+        if (PlayerController.GroundedCheck)
         {
-            PlayerAnim.SetBool("Grounded", true);
+            PlayerAnim.SetBool("GroundedCheck", true);
         }
         else
         {
-            PlayerAnim.SetBool("Grounded", false);
+            PlayerAnim.SetBool("GroundedCheck", false);
         }
 
         if (PlayerController.Crouching)
