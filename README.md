@@ -3,7 +3,6 @@
 # TODO:
 
 ## Movement/Animation
-- Dashing
 - Dash Cooldown Bar
 - Wall Grabs/ Wall Slides
 - Split Legs From Torso
