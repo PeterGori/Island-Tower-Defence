@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     public float CrouchDragCoefficient;
     private float CrouchTime;
     private float CrouchTimeCounter;
+    public float NoInputDragCoefficient;
     
     [Header("Jumping")]
     public float MaxJumpForce;
@@ -202,7 +203,7 @@ public class PlayerController : MonoBehaviour
     private void ApplyMovementInput()
     {
         // If the player is walking speed remains constant
-        if (!Crouching && !Dashing && !Sliding) PlayerRb.linearVelocity = new Vector2(MovementSpeed * HorizontalMovementInputDirection, PlayerRb.linearVelocity.y);
+        if (!Crouching && !Dashing && !Sliding && HorizontalMovementInputDirection != 0) PlayerRb.linearVelocity = new Vector2(MovementSpeed * HorizontalMovementInputDirection, PlayerRb.linearVelocity.y);
         // Applies dashing movement speed
         else if (Dashing) PlayerRb.linearVelocity = DashDirection.normalized * DashForce;
         // Applies sliding drag
@@ -212,6 +213,7 @@ public class PlayerController : MonoBehaviour
             PlayerRb.linearVelocity = Mathf.Abs(PlayerRb.linearVelocityX) > 0.2
                 ? new Vector2(PlayerRb.linearVelocityX * CrouchDragCoefficient, PlayerRb.linearVelocity.y)
                 : new Vector2(0, PlayerRb.linearVelocity.y);
+        else PlayerRb.linearVelocity = new Vector2(PlayerRb.linearVelocityX * NoInputDragCoefficient, PlayerRb.linearVelocity.y); 
     }
 
     // Makes the player jump by setting the player's y velocity to the MaxJumpForce and playing the jump animation.

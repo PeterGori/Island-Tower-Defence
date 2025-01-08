@@ -5332,6 +5332,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MovementSpeed: 6
   CrouchDragCoefficient: 0.95
+  NoInputDragCoefficient: 0.99
   MaxJumpForce: 10
   MinJumpForce: 4.5
   CoyoteTime: 0.05
